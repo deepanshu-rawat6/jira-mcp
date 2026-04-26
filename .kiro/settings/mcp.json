@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "atlassian-unlocked": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "<path to git repo>",
+        "python",
+        "-m",
+        "jira_confluence_mcp"
+      ]
+    }
+  }
+}
