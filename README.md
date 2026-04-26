@@ -62,12 +62,13 @@ flowchart TD
 
     A -->|🟢 Auto-approved| R[Run immediately]
     A -->|⚠️ WRITE| W[AI summarises action\nand asks to confirm]
-    A -->|🔴 DESTRUCTIVE| D[AI requires explicit\nconfirmation with\nresource name]
+    A -->|🔴 DESTRUCTIVE| D[AI requires explicit\nconfirmation with resource name]
 
     W -->|User confirms| R
     W -->|User cancels| X[Abort]
-    D -->|User says yes + resource name| R
-    D -->|Vague response| D
+
+    D -->|Explicit yes + resource name| R
+    D -->|Vague response| V[Re-prompt for\nexplicit confirmation]
     D -->|User cancels| X
 
     R --> API[Atlassian API call]
@@ -77,6 +78,7 @@ flowchart TD
     style W fill:#f59e0b,color:#fff
     style D fill:#ef4444,color:#fff
     style X fill:#6b7280,color:#fff
+    style V fill:#6b7280,color:#fff
 ```
 
 ---
