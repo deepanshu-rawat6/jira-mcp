@@ -21,6 +21,66 @@ No delete operations are exposed. Destructive writes require explicit confirmati
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart LR
+    K[kiro-cli] -->|stdio| S[FastMCP Server\nAtlassian MCP]
+    S --> C[AtlassianClient\nBasic Auth]
+    C -->|REST API v3| J[Jira Cloud]
+    C -->|REST API v2| CF[Confluence Cloud]
+
+    S --> J1 & J2 & J3 & J4 & J5 & J6 & J7 & J8
+    S --> C1 & C2 & C3 & C4 & C5 & C6
+
+    subgraph JiraTools[Jira Tools]
+        J1[jira_search]
+        J2[jira_get_issue]
+        J3[jira_add_comment]
+        J4[jira_add_label]
+        J5[jira_create_issue]
+        J6[jira_update_issue]
+        J7[jira_link_issues]
+        J8[jira_transition_issue]
+    end
+
+    subgraph ConfluenceTools[Confluence Tools]
+        C1[confluence_search]
+        C2[confluence_list_spaces]
+        C3[confluence_get_page]
+        C4[confluence_add_comment]
+        C5[confluence_create_page]
+        C6[confluence_update_page]
+    end
+```
+
+## Safety Tier Flow
+
+```mermaid
+flowchart TD
+    U[User prompt] --> A{Tool tier?}
+
+    A -->|🟢 Auto-approved| R[Run immediately]
+    A -->|⚠️ WRITE| W[AI summarises action\nand asks to confirm]
+    A -->|🔴 DESTRUCTIVE| D[AI requires explicit\nconfirmation with\nresource name]
+
+    W -->|User confirms| R
+    W -->|User cancels| X[Abort]
+    D -->|User says yes + resource name| R
+    D -->|Vague response| D
+    D -->|User cancels| X
+
+    R --> API[Atlassian API call]
+    API --> Res[Result returned to user]
+
+    style R fill:#22c55e,color:#fff
+    style W fill:#f59e0b,color:#fff
+    style D fill:#ef4444,color:#fff
+    style X fill:#6b7280,color:#fff
+```
+
+---
+
 ## Prerequisites
 
 - Python 3.11+
